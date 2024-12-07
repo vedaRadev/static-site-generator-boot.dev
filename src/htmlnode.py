@@ -39,8 +39,8 @@ class LeafNode(HTMLNode):
 
 
     def to_html(self):
-        # TODO move this up to the constructor
-        if not self.value:
+        # empty string values are ok
+        if not self.value and self.value != "":
             raise ValueError("leaf nodes must have values")
 
         if not self.tag:
