@@ -33,6 +33,16 @@ class HTMLNode:
         return f"tag: {self.tag}\nvalue: {self.value}\nchildren: {self.children}\nprops: {self.props}"
 
 
+    def __eq__(self, other):
+        return (
+            self.tag == other.tag
+            and self.value == other.value
+            and self.children == other.children
+            and self.props == other.props
+        )
+
+
+
 class LeafNode(HTMLNode):
     def __init__(self, tag, value, props = None):
         super().__init__(tag, value, None, props)
@@ -50,8 +60,8 @@ class LeafNode(HTMLNode):
 
 
 class ParentNode(HTMLNode):
-    def __init__(self, tag, children):
-        super().__init__(tag, None, children, None)
+    def __init__(self, tag, children, props = None):
+        super().__init__(tag, None, children, props)
 
 
     def to_html(self) -> str:

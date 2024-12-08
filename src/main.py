@@ -1,17 +1,8 @@
-from utils import markdown_to_blocks
+from markdown_to_html import markdown_to_html
 
 def main():
-    string = """# This is a heading
-                
-This is a paragraph of text. It has some **bold** and *italic* words inside of it.
-    
-* This is the first list item in a list block    
-* This is a list item
-* This is another list item
-    """
-
-    # print(string.splitlines())
-    print(markdown_to_blocks(string))
+    text = "This is **bold** text _in_ a paragraph"
+    print(markdown_to_html(text).to_html())
 
 if __name__ == "__main__":
     main()

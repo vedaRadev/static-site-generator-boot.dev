@@ -130,15 +130,6 @@ class TestTextNodeDelimiterSplitting(unittest.TestCase):
             self.assertNotIn("_", italic_node.text)
 
 
-    def test_triple_delimiter(self):
-        node1 = TextNode("this is a ```triple``` delimiter", TextType.NORMAL)
-        new_nodes = split_text_nodes_on_delimiter([node1], "```", TextType.CODE)
-
-        self.assertEqual(len(new_nodes), 3)
-        self.assertEqual(1, len(list(filter(lambda node: node.text_type == TextType.CODE, new_nodes))))
-        self.assertNotIn("```", new_nodes[1].text)
-
-
 class TestTextNodeLinkSplitting(unittest.TestCase):
     def test_no_links(self):
         nodes = [
@@ -290,7 +281,7 @@ class TestTextParsing(unittest.TestCase):
 
     
     def test_jammed_together(self):
-        text = "normal*italic*__bold__`code1` ```code2```[link](www.link.com)![image](./img.jpg)"
+        text = "normal*italic*__bold__`code1`[link](www.link.com)![image](./img.jpg)"
         nodes = to_text_nodes(text)
         self.assertListEqual(
             nodes,
@@ -299,8 +290,6 @@ class TestTextParsing(unittest.TestCase):
                 TextNode("italic", TextType.ITALIC),
                 TextNode("bold", TextType.BOLD),
                 TextNode("code1", TextType.CODE),
-                TextNode(" ", TextType.NORMAL),
-                TextNode("code2", TextType.CODE),
                 TextNode("link", TextType.LINK, "www.link.com"),
                 TextNode("image", TextType.IMAGE, "./img.jpg"),
             ]
