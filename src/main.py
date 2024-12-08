@@ -1,5 +1,6 @@
 import os
 import shutil
+from pathlib import Path
 from utils import extract_title
 from markdown_to_html import markdown_to_html
 
@@ -26,7 +27,15 @@ def copy_clean_tree(src: str, dst: str):
         copy_clean_tree(src_path, dst_path)
 
 
-def generate_page(src_path: str, template_path: str, dst_path: str):
+def generate_pages(template_path: Path, src_path: Path, dst_path: Path):
+    if not os.path.isfile(src_path):
+        for name in os.listdir(src_path):
+            generate_pages(template_path, src_path / name, dst_path / name)
+        return
+
+    if src_path.suffix != ".md":
+        return
+
     print(f"Generating page with template {template_path}: {src_path} -> {dst_path}")
 
     markdown = None
@@ -42,13 +51,13 @@ def generate_page(src_path: str, template_path: str, dst_path: str):
     generated = template.replace("{{ Title }}", title).replace("{{ Content }}", html)
 
     os.makedirs(os.path.dirname(dst_path), exist_ok = True)
-    with open(dst_path, "w") as html_file:
+    with open(dst_path.with_suffix(".html"), "w") as html_file:
         html_file.write(generated)
 
 
 def main():
     copy_clean_tree("static", "public")
-    generate_page("content/index.md", "template.html", "public/index.html")
+    generate_pages(Path("./template.html"), Path("./content"), Path("./public"))
 
 
 if __name__ == "__main__":

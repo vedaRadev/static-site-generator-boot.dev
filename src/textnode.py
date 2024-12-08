@@ -143,13 +143,13 @@ def split_text_nodes_on_image(text_nodes: list[TextNode]) -> list[TextNode]:
 def to_text_nodes(text: str) -> list[TextNode]:
     nodes = [ TextNode(text, TextType.NORMAL) ]
     instructions = [
+        split_text_nodes_on_image,
+        split_text_nodes_on_link,
         lambda nodes: split_text_nodes_on_delimiter(nodes, "**", TextType.BOLD),
         lambda nodes: split_text_nodes_on_delimiter(nodes, "__", TextType.BOLD),
         lambda nodes: split_text_nodes_on_delimiter(nodes, "*", TextType.ITALIC),
         lambda nodes: split_text_nodes_on_delimiter(nodes, "_", TextType.ITALIC),
         lambda nodes: split_text_nodes_on_delimiter(nodes, "`", TextType.CODE),
-        split_text_nodes_on_image,
-        split_text_nodes_on_link,
     ]
 
     for instruction in instructions:
