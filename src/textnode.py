@@ -50,7 +50,7 @@ class TextNode:
 # NOTE At the moment we're not supported nested delimiters.
 # e.g. "This is an *italic and **bold** word*" is NOT supported.
 # TODO Rename to split_text_nodes_on_delimiter
-def split_text_nodes_on(text_nodes: list[TextNode], delimiter: str, text_type: TextType) -> list[TextNode]:
+def split_text_nodes_on_delimiter(text_nodes: list[TextNode], delimiter: str, text_type: TextType) -> list[TextNode]:
     """
     Return a new list of text nodes. The original list is split on the delimiter and the new node
     types are of text_type. Nested delimiters is not supported. Only supports splitting on NORMAL

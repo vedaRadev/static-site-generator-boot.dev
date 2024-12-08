@@ -1,7 +1,7 @@
 import unittest
 
 from textnode import TextNode, TextType
-from textnode import split_text_nodes_on, split_text_nodes_on_image, split_text_nodes_on_link
+from textnode import split_text_nodes_on_delimiter, split_text_nodes_on_image, split_text_nodes_on_link
 
 from htmlnode import LeafNode
 
@@ -97,7 +97,7 @@ class TestTextNode(unittest.TestCase):
 class TestTextNodeDelimiterSplitting(unittest.TestCase):
     def test_simple(self):
         node = TextNode("This is text with a `code block` word", TextType.NORMAL)
-        new_nodes = split_text_nodes_on([node], "`", TextType.CODE)
+        new_nodes = split_text_nodes_on_delimiter([node], "`", TextType.CODE)
 
         self.assertEqual(len(new_nodes), 3)
 
@@ -115,13 +115,13 @@ class TestTextNodeDelimiterSplitting(unittest.TestCase):
     def test_invalid_markdown(self):
         node = TextNode("unterminated *delimiter", TextType.NORMAL)
         with self.assertRaises(ValueError):
-            split_text_nodes_on([node], "*", TextType.BOLD)
+            split_text_nodes_on_delimiter([node], "*", TextType.BOLD)
 
 
     def test_multiple(self):
         node1 = TextNode("there _are_ some _delimited_ words", TextType.NORMAL)
         node2 = TextNode("and _some_ here _too__test_", TextType.NORMAL)
-        new_nodes = split_text_nodes_on([node1, node2], "_", TextType.ITALIC)
+        new_nodes = split_text_nodes_on_delimiter([node1, node2], "_", TextType.ITALIC)
 
         self.assertEqual(len(new_nodes), 10)
         italic_nodes = list(filter(lambda node: node.text_type == TextType.ITALIC, new_nodes))
@@ -132,7 +132,7 @@ class TestTextNodeDelimiterSplitting(unittest.TestCase):
 
     def test_triple_delimiter(self):
         node1 = TextNode("this is a ```triple``` delimiter", TextType.NORMAL)
-        new_nodes = split_text_nodes_on([node1], "```", TextType.CODE)
+        new_nodes = split_text_nodes_on_delimiter([node1], "```", TextType.CODE)
 
         self.assertEqual(len(new_nodes), 3)
         self.assertEqual(1, len(list(filter(lambda node: node.text_type == TextType.CODE, new_nodes))))
