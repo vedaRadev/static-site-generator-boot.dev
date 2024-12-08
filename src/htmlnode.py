@@ -17,7 +17,7 @@ class HTMLNode:
     
 
     # TODO default props to empty dictionary
-    def props_to_html(self):
+    def props_to_html(self) -> str:
         result = ""
 
         if not self.props:
@@ -38,7 +38,7 @@ class LeafNode(HTMLNode):
         super().__init__(tag, value, None, props)
 
 
-    def to_html(self):
+    def to_html(self) -> str:
         # empty string values are ok
         if not self.value and self.value != "":
             raise ValueError("leaf nodes must have values")
@@ -54,7 +54,7 @@ class ParentNode(HTMLNode):
         super().__init__(tag, None, children, None)
 
 
-    def to_html(self):
+    def to_html(self) -> str:
         if not self.tag:
             raise ValueError("parent nodes must have tags")
         if not self.children:
