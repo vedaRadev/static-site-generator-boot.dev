@@ -1,5 +1,7 @@
 from enum import Enum
 from htmlnode import LeafNode
+from utils import extract_markdown_links, extract_markdown_images
+from typing import Callable
 
 
 class TextType(Enum):
@@ -47,6 +49,7 @@ class TextNode:
 
 # NOTE At the moment we're not supported nested delimiters.
 # e.g. "This is an *italic and **bold** word*" is NOT supported.
+# TODO Rename to split_text_nodes_on_delimiter
 def split_text_nodes_on(text_nodes: list[TextNode], delimiter: str, text_type: TextType) -> list[TextNode]:
     """
     Return a new list of text nodes. The original list is split on the delimiter and the new node
@@ -85,3 +88,51 @@ def split_text_nodes_on(text_nodes: list[TextNode], delimiter: str, text_type: T
                 new_nodes.append(TextNode(text, text_type, node.url))
 
     return new_nodes
+
+
+# TODO this might not be a great name for the function since it's dealing mostly with just images
+# and links
+def split_text_nodes_on_markdown_element(
+    text_nodes: list[TextNode],
+    md_extractor: Callable[[str], list[tuple[str, str]]],
+    to_delimiter: Callable[[str, str], str],
+    text_type: TextType
+) -> list[TextNode]:
+    new_text_nodes = []
+
+    for node in text_nodes:
+        matches = md_extractor(node.text)
+        if not matches:
+            new_text_nodes.append(node)
+
+        after = node.text
+        for text, url in matches:
+            delimiter = to_delimiter(text, url)
+            before, after = after.split(delimiter, 1)
+            if before:
+                new_text_nodes.append(TextNode(before, node.text_type, node.url))
+            new_text_nodes.append(TextNode(text, text_type, url))
+        
+        # there was additional stuff left over that we need to account for
+        if after:
+            new_text_nodes.append(TextNode(after, node.text_type, node.url))
+
+    return new_text_nodes
+
+
+def split_text_nodes_on_link(text_nodes: list[TextNode]) -> list[TextNode]:
+    return split_text_nodes_on_markdown_element(
+        text_nodes,
+        extract_markdown_links,
+        lambda href, url: f"[{href}]({url})",
+        TextType.LINK
+    )
+
+
+def split_text_nodes_on_image(text_nodes: list[TextNode]) -> list[TextNode]:
+    return split_text_nodes_on_markdown_element(
+        text_nodes,
+        extract_markdown_images,
+        lambda href, url: f"![{href}]({url})",
+        TextType.IMAGE
+    )
