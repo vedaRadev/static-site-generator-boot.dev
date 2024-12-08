@@ -19,8 +19,12 @@ def extract_markdown_links(md_text: str) -> list[tuple[str, str]]:
     return matches
 
 
-# NOTE exepcts ONE title per invocation
+# NOTE expects ONE title per invocation
 # TODO Was accidentally looking at the wrong lesson but I'll go ahead and make note of the regex I
 # constructed for this: ^\s*\#\s*(.*?(\n|\r\n))
 def extract_title(md_text: str) -> str:
-    pass
+    match = re.match(r"^\s*#\s(.*)(\r|\n)?", md_text)
+    if not match:
+        raise ValueError("Expected an h1 (#) header in the markdown document")
+
+    return match.group(1).rstrip()

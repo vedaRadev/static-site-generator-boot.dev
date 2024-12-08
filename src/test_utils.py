@@ -1,5 +1,5 @@
 import unittest
-from utils import extract_markdown_images, extract_markdown_links
+from utils import extract_markdown_images, extract_markdown_links, extract_title
 
 
 class TestMarkdownImageExtraction(unittest.TestCase):
@@ -22,3 +22,22 @@ class TestMarkdownLinkExtraction(unittest.TestCase):
         self.assertEqual(matches[0][1], "https://www.boot.dev")
         self.assertEqual(matches[1][0], "to youtube")
         self.assertEqual(matches[1][1], "https://www.youtube.com/@bootdotdev")
+
+
+class TestTitleExtraction(unittest.TestCase):
+    def test_no_title(self):
+        text = "there is no title"
+        with self.assertRaises(ValueError):
+            extract_title(text)
+
+
+    def test_h1_title(self):
+        text = "# This is the title     "
+        result = extract_title(text)
+        self.assertEqual(result, "This is the title")
+
+
+    def test_non_h1_title(self):
+        text = "#### This is the title     "
+        with self.assertRaises(ValueError):
+            extract_title(text)
