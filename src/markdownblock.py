@@ -12,23 +12,15 @@ class BlockType(Enum):
     ORDERED_LIST = "ordered_list"
 
 
-def block_reducer(acc: list[str], line: str) -> list[str]:
-    # is the line all whitespace?
-    if not "".join(line.split()):
-        # avoid runs of empty strings in the acc
-        if acc and acc[-1]:
-            acc.append("")
-    else:
-        if len(acc) == 0:
-            acc.append("")
-        acc[-1] += ("\n" if acc[-1] else "") + line.strip("\t ")
-    return acc
-
-
 def markdown_to_blocks(md_document: str) -> list[str]:
-    result = reduce(block_reducer, md_document.splitlines(), [])
-    # If there is a line of whitespace at the end of the string we'll end up with a trailing newline
-    return result if not result or result[-1] else result[0:-1]
+    blocks = md_document.split("\n\n")
+    filtered = []
+    for block in blocks:
+        block = block.strip()
+        if not block: continue
+        filtered.append(block)
+
+    return filtered
 
 
 def is_quote_item(s: str) -> bool:

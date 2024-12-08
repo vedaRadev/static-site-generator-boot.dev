@@ -186,29 +186,29 @@ class TestMarkdownToHtml(unittest.TestCase):
 
     def test_big(self):
         text = """
-        # MY MARKDOWN DOCUMENT
-        
-        ## _Italic Section_
+# MY MARKDOWN DOCUMENT
 
-        1. Apples
-        2. Cheese
-        3. Wine
+## _Italic Section_
 
-        - [google](google.com)
-        - [netflix](netflix.com)
+1. Apples
+2. Cheese
+3. Wine
 
-        ```
-        Not sure what to type here.
-        Second line.
-        [link](link.com)
-        ```
+- [google](google.com)
+- [netflix](netflix.com)
 
-        > **bolded quote** with `inline code`
+```
+Not sure what to type here.
+Second line.
+[link](link.com)
+```
 
-        ### ![my image](./img.jpg)
+> **bolded quote** with `inline code`
 
-        Regular paragraph.
-        Should be on same line.
+### ![my image](./img.jpg)
+
+Regular paragraph.
+Should be on same line.
         """
         result = markdown_to_html(text)
         self.assertEqual(

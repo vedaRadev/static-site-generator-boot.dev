@@ -20,7 +20,7 @@ def markdown_to_html(md_doc: str) -> HTMLNode:
 
             case BlockType.HEADING:
                 heading_level = len(re.match(r"^\#{1,6}", block).group(0)) # type: ignore
-                text_nodes = to_text_nodes(block.lstrip("#").lstrip())
+                text_nodes = to_text_nodes(block.lstrip("#").strip())
                 html_node = ParentNode(f"h{heading_level}", list(map(lambda tn: tn.to_html_leaf_node(), text_nodes)))
 
             case BlockType.CODE:
@@ -46,7 +46,7 @@ def markdown_to_html(md_doc: str) -> HTMLNode:
                 html_node = ParentNode("ul", list(temp))
 
             case BlockType.ORDERED_LIST:
-                temp = map(lambda line: re.sub(r"^\d+\. ", "", line), block.splitlines()) # strip leading numbers
+                temp = map(lambda line: re.sub(r"^\d+\. ", "", line.strip()), block.splitlines()) # strip leading numbers
                 temp = map(to_text_nodes, temp)
                 temp = map(lambda text_nodes: map(lambda tn: tn.to_html_leaf_node(), text_nodes), temp)
                 temp = map(lambda leaves: ParentNode("li", list(leaves)), temp)

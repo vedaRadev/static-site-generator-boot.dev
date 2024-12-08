@@ -44,13 +44,13 @@ class TestMarkdownBlockExtractor(unittest.TestCase):
 
     def test_quote_real_world_example_unquote(self):
         text = """
-        # This is a heading
+# This is a heading
 
-        This is a paragraph of text. It has some **bold** and *italic* words inside of it.
+This is a paragraph of text. It has some **bold** and *italic* words inside of it.
 
-        * First
-        * Second
-        * Third
+* First
+* Second
+* Third
         """
         result = markdown_to_blocks(text)
         self.assertListEqual(
