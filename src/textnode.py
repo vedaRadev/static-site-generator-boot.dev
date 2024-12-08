@@ -104,6 +104,7 @@ def split_text_nodes_on_markdown_element(
         matches = md_extractor(node.text)
         if not matches:
             new_text_nodes.append(node)
+            continue
 
         after = node.text
         for text, url in matches:
@@ -136,3 +137,23 @@ def split_text_nodes_on_image(text_nodes: list[TextNode]) -> list[TextNode]:
         lambda href, url: f"![{href}]({url})",
         TextType.IMAGE
     )
+
+
+# FIXME This is probably very inefficient
+def to_text_nodes(text: str) -> list[TextNode]:
+    nodes = [ TextNode(text, TextType.NORMAL) ]
+    instructions = [
+        lambda nodes: split_text_nodes_on_delimiter(nodes, "**", TextType.BOLD),
+        lambda nodes: split_text_nodes_on_delimiter(nodes, "__", TextType.BOLD),
+        lambda nodes: split_text_nodes_on_delimiter(nodes, "*", TextType.ITALIC),
+        lambda nodes: split_text_nodes_on_delimiter(nodes, "_", TextType.ITALIC),
+        lambda nodes: split_text_nodes_on_delimiter(nodes, "```", TextType.CODE),
+        lambda nodes: split_text_nodes_on_delimiter(nodes, "`", TextType.CODE),
+        split_text_nodes_on_image,
+        split_text_nodes_on_link,
+    ]
+
+    for instruction in instructions:
+        nodes = instruction(nodes)
+
+    return nodes

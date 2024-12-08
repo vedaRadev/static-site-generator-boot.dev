@@ -1,6 +1,6 @@
 import unittest
 
-from textnode import TextNode, TextType
+from textnode import TextNode, TextType, to_text_nodes
 from textnode import split_text_nodes_on_delimiter, split_text_nodes_on_image, split_text_nodes_on_link
 
 from htmlnode import LeafNode
@@ -276,4 +276,65 @@ class TestTextNodeImageSplitting(unittest.TestCase):
                 TextNode("image d", TextType.IMAGE, "./res/img/image_d.jpg"),
                 TextNode(" end", TextType.NORMAL),
             ],
+        )
+
+
+class TestTextParsing(unittest.TestCase):
+    def test_basic(self):
+        text = "nothing special to parse here"
+        nodes = to_text_nodes(text)
+        self.assertListEqual(
+            nodes,
+            [ TextNode(text, TextType.NORMAL) ]
+        )
+
+    
+    def test_jammed_together(self):
+        text = "normal*italic*__bold__`code1` ```code2```[link](www.link.com)![image](./img.jpg)"
+        nodes = to_text_nodes(text)
+        self.assertListEqual(
+            nodes,
+            [
+                TextNode("normal", TextType.NORMAL),
+                TextNode("italic", TextType.ITALIC),
+                TextNode("bold", TextType.BOLD),
+                TextNode("code1", TextType.CODE),
+                TextNode(" ", TextType.NORMAL),
+                TextNode("code2", TextType.CODE),
+                TextNode("link", TextType.LINK, "www.link.com"),
+                TextNode("image", TextType.IMAGE, "./img.jpg"),
+            ]
+        )
+
+
+    def test_many_italic(self):
+        text = "_italic_ _italic_ _italic_ _italic_"
+        nodes = to_text_nodes(text)
+        self.assertListEqual(
+            nodes,
+            [
+                TextNode("italic", TextType.ITALIC),
+                TextNode(" ", TextType.NORMAL),
+                TextNode("italic", TextType.ITALIC),
+                TextNode(" ", TextType.NORMAL),
+                TextNode("italic", TextType.ITALIC),
+                TextNode(" ", TextType.NORMAL),
+                TextNode("italic", TextType.ITALIC),
+            ]
+        )
+
+
+    def test_many_links_and_images(self):
+        text = "[a](a.com)[b](b.com)[c](c.com)![x](./x.jpg)![y](./y.jpg)![z](./z.jpg)"
+        nodes = to_text_nodes(text)
+        self.assertListEqual(
+            nodes,
+            [
+                TextNode("a", TextType.LINK, "a.com"),
+                TextNode("b", TextType.LINK, "b.com"),
+                TextNode("c", TextType.LINK, "c.com"),
+                TextNode("x", TextType.IMAGE, "./x.jpg"),
+                TextNode("y", TextType.IMAGE, "./y.jpg"),
+                TextNode("z", TextType.IMAGE, "./z.jpg"),
+            ]
         )
