@@ -140,6 +140,17 @@ class TestTextNodeDelimiterSplitting(unittest.TestCase):
 
 
 class TestTextNodeLinkSplitting(unittest.TestCase):
+    def test_no_links(self):
+        nodes = [
+            TextNode("No link here", TextType.NORMAL),
+            TextNode("nor here", TextType.NORMAL),
+            TextNode("not here either!", TextType.NORMAL),
+            TextNode("[oh no look](just barely not a link!", TextType.NORMAL),
+        ]
+        result = split_text_nodes_on_link(nodes)
+        self.assertListEqual(result, nodes)
+
+
     def test_single_lone_link(self):
         node = TextNode("[link](www.link.com)", TextType.NORMAL)
         result = split_text_nodes_on_link([ node ])
@@ -199,6 +210,17 @@ class TestTextNodeLinkSplitting(unittest.TestCase):
 
 
 class TestTextNodeImageSplitting(unittest.TestCase):
+    def test_no_images(self):
+        nodes = [
+            TextNode("No image here", TextType.NORMAL),
+            TextNode("nor here", TextType.NORMAL),
+            TextNode("not here either!", TextType.NORMAL),
+            TextNode("![oh no look](just barely not an image!", TextType.NORMAL),
+        ]
+        result = split_text_nodes_on_image(nodes)
+        self.assertListEqual(result, nodes)
+
+
     def test_single_lone_image(self):
         node = TextNode("![image](./res/img/image.jpg)", TextType.NORMAL)
         result = split_text_nodes_on_image([ node ])
